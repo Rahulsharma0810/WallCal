@@ -9,8 +9,9 @@
 
 const CONFIG = {
   // Screen dimensions - width and height of the wallpaper in pixels (MacBook Pro 14/16 Retina)
-  WIDTH: 3024,
-  HEIGHT: 1964,
+  // UPDATED: Set to your specific screen resolution to avoid blur
+  WIDTH: 3456,
+  HEIGHT: 2234,
 
   // Background gradient colors - start and end colors for the dark gradient background
   BG_COLOR_START: "#1c1c1e",
@@ -163,7 +164,7 @@ function setWallpaper(){
   fs.writeFileSync(lockscreenPath, canvas.toBuffer("image/png"));
 
   // Set lock screen wallpaper
-  execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to "${lockscreenPath}"'`);
+  execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to "${lockscreenPath}"' && killall Dock`);
   console.log("Lock screen wallpaper set successfully ✅");
 }
 
