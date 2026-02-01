@@ -31,7 +31,7 @@ const CONFIG = {
   HEADER_HEIGHT: 50,
   PROGRESS_BAR_OFFSET: 30,
   PROGRESS_BAR_POSITION: 'bottom', // 'top', 'bottom', or 'login_screen' - where to place the progress bar
-  BOTTOM_PROGRESS_BAR_OFFSET: 50, // Offset from bottom when progress bar is at bottom
+  BOTTOM_PROGRESS_BAR_OFFSET: 80, // Offset from bottom when progress bar is at bottom
 
   // Calendar grid - number of columns and rows, spacing between calendar blocks
   COLS: 4,     // 4 months per row
@@ -132,29 +132,39 @@ function text(str,x,y,size=CONFIG.DEFAULT_TEXT_SIZE,color=CONFIG.TEXT_COLOR_DEFA
 }
 
 // ======================================================
-// NEXT 3 EVENTS (macOS calendar via AppleScript)
+// SAVE + SET WALLPAPER
 // ======================================================
 
-function getEvents(){
-  try{
-    const script = `
-      tell application "Calendar"
-        set now to current date
-        set tomorrow to now + (1 * days)
-        set theEvents to (every event whose start date ≥ now and start date < tomorrow)
-        set out to ""
-        repeat with e in theEvents
-          set out to out & (time string of (start date of e)) & "  " & (summary of e) & linefeed
-        end repeat
-        return out
-      end tell
-    `;
-    const res = execSync(`osascript -e '${script}'`).toString();
-    return res.split("\n").filter(Boolean).slice(0,3);
-  } catch(e) {
-    // console.log("Event fetch error:", e.message); // Silent fail preferred for wallpaper
-    return [];
+function setWallpaper(){
+  // Create images directory if it doesn't exist
+  const imagesDir = `${__dirname}/images`;
+  if (!fs.existsSync(imagesDir)){
+    fs.mkdirSync(imagesDir);
   }
+
+  // Save desktop wallpaper (progress bar higher up)
+  CONFIG.PROGRESS_BAR_POSITION = 'login_screen';
+  drawHeader();
+  const desktopPath = `${imagesDir}/mac-wallpaper.png`;
+  fs.writeFileSync(desktopPath, canvas.toBuffer("image/png"));
+
+  // Set desktop wallpaper
+  execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to "${desktopPath}"'`);
+  console.log("Desktop wallpaper set successfully ✅");
+
+  // Save lock screen wallpaper (progress bar at bottom)
+  // Reset canvas to remove previous progress bar
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,CONFIG.WIDTH,CONFIG.HEIGHT);
+  drawCalendar(); // Redraw calendar without progress bar
+  CONFIG.PROGRESS_BAR_POSITION = 'bottom';
+  drawHeader(); // Draw progress bar in new position
+  const lockscreenPath = `${imagesDir}/mac-lockscreenwallpaper.png`;
+  fs.writeFileSync(lockscreenPath, canvas.toBuffer("image/png"));
+
+  // Set lock screen wallpaper
+  execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to "${lockscreenPath}"'`);
+  console.log("Lock screen wallpaper set successfully ✅");
 }
 
 // ======================================================
@@ -186,8 +196,9 @@ function drawHeader(){
   }
   else if(CONFIG.PROGRESS_BAR_POSITION === 'login_screen'){
 
-    // ⭐ Bottom of screen
-    barY = CONFIG.HEIGHT - CONFIG.BOTTOM_PROGRESS_BAR_OFFSET;
+    // ⭐ Slightly up from bottom (for login screen)
+    // Adjust this value to move progress bar higher up
+    barY = CONFIG.HEIGHT - (CONFIG.BOTTOM_PROGRESS_BAR_OFFSET * 3);
 
   }
   else { // top
@@ -341,23 +352,16 @@ function drawCalendar(){
 }
 
 
-// ======================================================
-// SAVE + SET WALLPAPER
-// ======================================================
-
-function setWallpaper(){
-  const path = `${__dirname}/wallpaper.png`;
-  fs.writeFileSync(path, canvas.toBuffer("image/png"));
-  execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to "${path}"'`);
-}
 
 
 // ======================================================
 // MAIN
 // ======================================================
 
-drawHeader();
+// Draw calendar once (common to both wallpapers)
 drawCalendar();
+
+// Save wallpapers with different progress bar positions
 setWallpaper();
 
-console.log("Wallpaper generated with LARGE fonts ✅");
+console.log("Wallpaper generated ✅");
