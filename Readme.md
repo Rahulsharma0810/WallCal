@@ -30,13 +30,11 @@ The script automatically scans your iOS calendars, filters them by a special pre
 ## Installation and Setup
 
 ### Option A: Using Scriptable App (Recommended)
-
 1. Install [Scriptable](https://apps.apple.com/us/app/scriptable/id1405459188) from the App Store.
 2. Create a new script, name it `LockScreenCalendar`, and copy the code from `script.js` into Run Script action.
 3. In iOS settings (Calendar), rename existing calendars that you want to display by adding `*` to the beginning (e.g., `*Work`) or add them manually in script.
 
 ### Option B: Paste Directly in Shortcuts
-
 1. You can skip creating a file in Scriptable and paste the entire code directly into the **Run Script** action in Shortcuts.
 
 ---
@@ -44,18 +42,15 @@ The script automatically scans your iOS calendars, filters them by a special pre
 ### Shortcuts Workflow Setup
 
 #### 1. Basic Setup (Solid Color / Gradient)
-
 1. Create a new Shortcut.
 2. Add **Run Script** action (Scriptable). Select your script (or paste code).
 3. Add **Set Wallpaper** action.
    - Image: Select "Output" from previous step.
    - Screen: "Lock Screen".
    - **Disable "Show Preview" and "Crop to Subject"**.
-
 - For gradient background, ensure `showWallpaper` is set to `false` in the script. and `useGradient` is set to `true`.
 
 #### 2. Using Custom Wallpaper (Photos)
-
 To use a random photo from an album as a background:
 
 1. Create an album in Photos (e.g., "Wallpapers").
@@ -68,15 +63,13 @@ To use a random photo from an album as a background:
    - Select **Photos** (the output from the first step).
 4. In the script `CONFIG`, ensure:
    ```javascript
-   showWallpaper: true;
+   showWallpaper: true
    ```
 
 <img src="screenshots/shortcut.png" width="300" />
 
 ### Automation
-
 To update daily:
-
 1. Go to "Automation" tab -> "Personal Automation".
 2. Select **Time of Day** (e.g., 08:00).
 3. Add **Run Shortcut** action -> Select your shortcut.
@@ -84,82 +77,91 @@ To update daily:
 
 <img src="screenshots/automation.png" width="300" />
 
-## Configuration
+
+
+## Configuration (iPhone)
 
 Customize `CONFIG` at the top of the script:
 
 ```javascript
 const CONFIG = {
   // --- 1. GENERAL & APPEARANCE ---
-  monthsToShow: 12, // 12 = Year, 3 = Quarter, 1 = Month
-  monthsPerRow: 3, // Standard is 3
-  monthOffset: 0, // Start from 0 = Current, -1 = Previous, 1 = Next
-  contentScale: 1.0, // Global Scale Multiplier
+  monthsToShow: 12,        // 12 = Year, 3 = Quarter, 1 = Month
+  monthsPerRow: 3,         // Standard is 3
+  monthOffset: 0,          // Start from 0 = Current, -1 = Previous, 1 = Next
+  contentScale: 1.0,       // Global Scale Multiplier
 
   // Day & Dot Settings
-  showDayNumbers: false, // true = numbers, false = dots
-  firstDayOfWeek: 1, // 0 = Sunday, 1 = Monday
+  showDayNumbers: false,   // true = numbers, false = dots
+  firstDayOfWeek: 1,       // 0 = Sunday, 1 = Monday
   highlightWeekends: true,
-  dimPastDays: true, // If true, past days are 30% opacity
+  dimPastDays: true,       // If true, past days are 30% opacity
 
   // --- 2. BACKGROUND SETTINGS ---
   // Custom Wallpaper (Photo from Shortcuts)
-  showWallpaper: true, // Priority 1: Use photo if provided via Input
-  overlayOpacity: 0.3, // Darken photo (0.0 - 1.0)
-
+  showWallpaper: true,     // Priority 1: Use photo if provided via Input
+  overlayOpacity: 0.3,     // Darken photo (0.0 - 1.0)
+  
   // Gradient (Priority 2: Used if no photo or showWallpaper=false)
   useGradient: true,
   gradientColors: ["#0F2027", "#203A43", "#2C5364"], // Example: "Moonlit Asteroid"
-
+  
   // Container (Card behind calendar for better visibility)
   showContainer: true,
-  containerOpacity: 0.8,
+  containerOpacity: 0.80,
   containerRadius: 15,
 
   // ... (Other standard settings)
 };
 ```
 
-## Mac Setup (Node.js)
+---
 
-The repository also includes a Node.js version for macOS (`mac-wallpaper.js`) that generates a high-resolution desktop wallpaper with the same calendar grid and year progress features.
+# Mac Wallpaper Generator
 
-### Prerequisites
+A Node.js version of the calendar wallpaper for macOS. It generates high-resolution desktop and lock screen wallpapers with a yearly calendar and year progress bar.
 
-1.  **Node.js**: Ensure you have Node.js installed. You can download it from [nodejs.org](https://nodejs.org/) or install via Homebrew:
-    ```bash
-    brew install node
-    ```
+<img src="images/mac-wallpaper.png" width="600" />
 
-### Installation
+## Features
+- **High Resolution**: 1:1 pixel mapping for Retina sharpness.
+- **Dual Mode**: Generates a desktop wallpaper (progress bar near login) and a lock screen wallpaper (progress bar at bottom).
+- **Customizable**: Configure colors, fonts, and layout.
 
-1.  Clone the repository or download the files.
-2.  Open a terminal in the project folder.
-3.  Install the required dependencies (Canvas):
+## Installation
+
+1.  Ensure you have [Node.js](https://nodejs.org/) installed.
+2.  Clone the repository and install dependencies:
     ```bash
     npm install
     ```
 
-### Usage
+## Configuration
 
-1.  Run the script to generate and set the wallpaper:
-    ```bash
-    node mac-wallpaper.js
-    ```
-2.  The script will:
-    -   Generate a wallpaper image (`wallpaper.png`) in the same folder.
-    -   Automatically set it as your desktop background using AppleScript.
+Open `mac-wallpaper.js` and edit the `CONFIG` object at the top.
+**Crucial**: Update `WIDTH` and `HEIGHT` to match your Mac's **physical** screen resolution (e.g., 3456 x 2234 for 16" MacBook Pro) for the sharpest results.
 
-### Configuration (Mac)
+```javascript
+const CONFIG = {
+  WIDTH: 3456, // Set to your screen's physical width
+  HEIGHT: 2234, // Set to your screen's physical height
+  // ... colors, fonts, etc.
+};
+```
 
-You can customize the layout, colors, and behavior by editing the `CONFIG` object at the top of `mac-wallpaper.js`.
+## Usage
 
-**Key Settings:**
--   `START_Y_RATIO`: Controls vertical positioning (useful for avoiding login screen elements).
--   `MAX_CONTENT_HEIGHT_RATIO`: Controls the height of the calendar area.
--   `START_X_RATIO` & `CONTENT_WIDTH_RATIO`: Controls horizontal positioning and width.
--   `PROGRESS_BAR_POSITION`: Position of the progress bar ('top', 'bottom', or 'login_screen').
+Run the script to generate and set the wallpaper:
 
-<img src="images/mac-wallpaper.png" width="600" />
+```bash
+node mac-wallpaper.js
+```
 
+This will:
+1.  Generate `images/mac-wallpaper.png` and `images/mac-lockscreenwallpaper.png`.
+2.  Automatically set your Desktop and Lock Screen wallpaper using AppleScript.
 
+> **Note**: You might need to grant Terminal/VSCode permission to control "System Events".
+
+### Troubleshooting Blur
+If the text looks blurry, ensure `CONFIG.WIDTH` and `CONFIG.HEIGHT` match your screen's physical resolution exactly, and `SCALE` is set to `1` in the script.

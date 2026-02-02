@@ -83,7 +83,9 @@ const { createCanvas } = require("canvas");
 // ======================================================
 
 // Retina scale factor
-const SCALE = 2;
+// Set to 1 for 1:1 pixel mapping (Sharpest on "Default" resolution)
+// Set to 2 if you want supersampling (can be softer due to OS downscaling)
+const SCALE = 1;
 
 // create high-res canvas
 const canvas = createCanvas(CONFIG.WIDTH * SCALE, CONFIG.HEIGHT * SCALE);
