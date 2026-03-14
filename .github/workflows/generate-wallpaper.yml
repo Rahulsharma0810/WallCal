@@ -5,6 +5,9 @@ on:
     - cron: '30 23 * * *' # Run at 23:30 UTC every day
   workflow_dispatch: # Allow manual triggering
 
+permissions:
+  contents: write
+
 jobs:
   generate:
     runs-on: macos-latest # Using macOS because node-canvas can be tricky to install on Linux without system deps
