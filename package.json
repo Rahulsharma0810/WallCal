@@ -4,6 +4,9 @@
   "description": "",
   "main": "wallpaper.js",
   "scripts": {
+    "generate:mac": "node mac-wallpaper.js",
+    "generate:iphone": "node iphone-wallpaper.js",
+    "generate:ipad": "node ipad-wallpaper.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

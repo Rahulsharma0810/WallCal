@@ -43,6 +43,7 @@ git clone https://github.com/Rahulsharma0810/WallCal.git
 cd WallCal
 npm install
 node mac-wallpaper.js
+node ipad-wallpaper.js
 ```
 
 ---
@@ -67,7 +68,7 @@ const CONFIG = {
 
 - [x] **macOS**: Full-year calendar with year progress.
 - [ ] **iPhone**: Vertical layout optimized for iOS widgets/lockscreen.
-- [ ] **iPad**: Tablet-optimized landscape/portrait grid.
+- [x] **iPad**: Portrait wallpaper generator for iPad Air 11-inch (M2).
 - [ ] **Custom Themes**: Support for light mode and varied gradients.
 
 ---
