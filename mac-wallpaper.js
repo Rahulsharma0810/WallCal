@@ -189,21 +189,21 @@ function drawHeader(){
 
   // Track (Subtle matching line)
   ctx.fillStyle = "rgba(255,255,255,0.08)";
-  ctx.fillRect(barX, barY, barW, 6);
+  ctx.fillRect(barX, barY, barW, 10);
 
   // Fill (Active progress)
   ctx.fillStyle = CONFIG.PROGRESS_BAR_COLOR;
-  ctx.fillRect(barX, barY, barW * percent, 6);
+  ctx.fillRect(barX, barY, barW * percent, 10);
 
   // Text (Centered over the bar)
   const daysLeft = Math.floor((end-now)/(1000*60*60*24));
   const weeksLeft = Math.ceil(daysLeft / 7);
   
   text(
-    `${Math.floor(percent*100)}% . ${daysLeft} Days Left . ${weeksLeft} Weeks Left`,
+    `${Math.floor(percent*100)}% • ${daysLeft} D • ${weeksLeft} W Left`,
     barX + (barW/2),
     textY,
-    18, 
+    22, 
     CONFIG.PROGRESS_TEXT_COLOR,
     "center"
   );
