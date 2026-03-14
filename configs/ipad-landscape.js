@@ -15,7 +15,6 @@ module.exports = {
     topPaddingRatio: 0.22,
     monthGapYRatio: 0.05,
     monthGapXRatio: 0.045,
-    startXOffsetRatio: 0.075,
     monthLabelSizeRatio: 0.019,
     monthLabelMinPx: 30,
     monthLabelGapRatio: 1.32,
@@ -25,9 +24,7 @@ module.exports = {
   progress: {
     show: true,
     textSizeRatio: 0.022,
-    bottomInsetRatio: 0.12,
-    availableWidthRatio: 0.72,
-    startXOffsetRatio: 0.11
+    bottomInsetRatio: 0.12
   },
   colors: SHARED_COLORS,
   fontFamily: FONT_FAMILY
