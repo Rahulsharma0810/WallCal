@@ -1,10 +1,10 @@
-#  WallCal: Dynamic Calendar Wallpaper
+#  WallCal: Dynamic Calendar Wallpapers
 
 [![Generate Wallpaper](https://github.com/Rahulsharma0810/WallCal/actions/workflows/generate-wallpaper.yml/badge.svg)](https://github.com/Rahulsharma0810/WallCal/actions/workflows/generate-wallpaper.yml)
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Node version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)
 
-A high-resolution, minimal dynamic calendar wallpaper for macOS. It features a full-year calendar with automated "spent" date greying, year progress tracking, and an optimized layout to clear the macOS lock screen clock and UI.
+A high-resolution, minimal set of dynamic calendar wallpapers for iPhone, iPad, and Mac. It features full-year dot calendars, automated past-day greying, year progress tracking, and device-specific layouts tuned for clean wallpaper composition.
 
 ---
 
@@ -16,12 +16,13 @@ A high-resolution, minimal dynamic calendar wallpaper for macOS. It features a f
 
 ## ✨ Features
 
-- **Daily Automation**: GitHub Actions generates the latest wallpaper every night before 00:00 UTC.
+- **Daily Automation**: GitHub Actions generates the latest wallpapers every night before 00:00 UTC.
 - **Smart Calendar**: Automatically highlights today's date and "greys out" past months and days.
-- **Year Progress**: A subtle progress bar showing the percentage of the current year completed.
-- **Retina Ready**: High-resolution output optimized for MacBook Pro 14/16" screens.
+- **Year Progress**: Shows days left, weeks left, and year completion percentage.
+- **Multi-Device Support**: Generates wallpapers for iPhone, iPad portrait, iPad landscape, and Mac.
+- **Retina Ready**: High-resolution output tuned for current device targets.
 - **Zero Dependencies (Local)**: No external APIs like Unsplash; uses pure `node-canvas` for speed and reliability.
-- **Lock Screen Compatible**: Specifically aligned to sit perfectly between the clock and login profile on macOS.
+- **Shared Renderer**: Common theme, validation, and rendering helpers keep platform outputs consistent.
 
 ---
 
@@ -42,33 +43,40 @@ Requires [Node.js](https://nodejs.org/) and `npm`.
 git clone https://github.com/Rahulsharma0810/WallCal.git
 cd WallCal
 npm install
-node mac-wallpaper.js
-node ipad-wallpaper.js
+npm run generate:all
+npm run verify
 ```
+
+### 3. Device Matrix
+
+See [DEVICES.md](/workspaces/WallCal/DEVICES.md) for the current platform targets, resolutions, output files, and local commands.
 
 ---
 
 ## 🛠 Configuration
 
-Edit `mac-wallpaper.js` to customize colors, fonts, or layout:
+Edit the platform configs under `configs/` to customize colors, fonts, or layout:
 
 ```javascript
 const CONFIG = {
-  WIDTH: 3456,
-  HEIGHT: 2234,
-  BG_COLOR_START: "#1c1c1e",
-  BG_COLOR_END: "#2c2c2e",
+  width: 3456,
+  height: 2234,
+  gradientColors: ["#191919", "#181818", "#181818"],
   // ... more settings
 };
 ```
+
+Shared colors, fonts, and month labels live in `lib/wallpaper-theme.js`. Shared drawing and output logic live in `lib/wallpaper-renderer.js`.
+
+Platform generator entrypoints live under `generators/`, shared logic under `lib/`, validation and device configs under `configs/`, and local utility scripts under `scripts/` and `tests/`.
 
 ---
 
 ## 📅 Roadmap
 
-- [x] **macOS**: Full-year calendar with year progress.
-- [ ] **iPhone**: Vertical layout optimized for iOS widgets/lockscreen.
-- [x] **iPad**: Portrait wallpaper generator for iPad Air 11-inch (M2).
+- [x] **macOS**: Full-year dot-calendar wallpaper.
+- [x] **iPhone**: Vertical dot-calendar wallpaper.
+- [x] **iPad**: Portrait and landscape wallpaper generators for iPad Air 11-inch (M2).
 - [ ] **Custom Themes**: Support for light mode and varied gradients.
 
 ---

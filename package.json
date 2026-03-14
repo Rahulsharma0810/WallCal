@@ -4,10 +4,14 @@
   "description": "",
   "main": "wallpaper.js",
   "scripts": {
-    "generate:mac": "node mac-wallpaper.js",
-    "generate:iphone": "node iphone-wallpaper.js",
-    "generate:ipad": "node ipad-wallpaper.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "generate:all": "node scripts/generate-all.js",
+    "generate:mac": "node generators/mac.js",
+    "generate:iphone": "node generators/iphone.js",
+    "generate:ipad": "node generators/ipad-portrait.js",
+    "generate:ipad-landscape": "node generators/ipad-landscape.js",
+    "test:layout": "node tests/layout-safety.js",
+    "verify": "node scripts/verify-wallpapers.js",
+    "test": "npm run generate:all && npm run verify && npm run test:layout"
   },
   "keywords": [],
   "author": "",

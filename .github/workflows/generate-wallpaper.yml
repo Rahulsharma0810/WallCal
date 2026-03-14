@@ -22,8 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Generate wallpaper
-        run: node mac-wallpaper.js
+      - name: Test and generate wallpapers
+        run: npm test
         env:
           # Prevent AppleScript errors in CI environment
           CI: true
@@ -31,5 +31,5 @@ jobs:
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: update daily wallpaper [skip ci]"
+          commit_message: "chore: update daily wallpapers [skip ci]"
           file_pattern: 'images/*.png'
