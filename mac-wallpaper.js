@@ -18,35 +18,36 @@ const CONFIG = {
   BG_COLOR_END: "#2c2c2e",
 
   // Font sizes - text sizes for month headers, date numbers, and default text
-  MONTH_SIZE: 40,
-  DATE_SIZE: 30,
-  DEFAULT_TEXT_SIZE: 44,
+  MONTH_SIZE: 36,
+  DATE_SIZE: 26,
+  DEFAULT_TEXT_SIZE: 32,
 
   // Layout percentages - ratios for positioning content on screen (horizontal start, width, vertical start, height)
-  START_X_RATIO: 0.25,        // Start calendar content at 15% from left edge
-  CONTENT_WIDTH_RATIO: 0.50,   // Use 70% of screen width for calendar content
-  START_Y_RATIO: 0.26,         // Start content at 20% from top
-  MAX_CONTENT_HEIGHT_RATIO: 0.53, // Use 45% of screen height for content
+  START_X_RATIO: 0.30,        // Start calendar content (centered)
+  CONTENT_WIDTH_RATIO: 0.40,   // Reduced from 0.50 to un-stretch
+  START_Y_RATIO: 0.35,         // Clear the clock
+  MAX_CONTENT_HEIGHT_RATIO: 0.38, // Compressed vertically
 
   // Header - height allocated for progress bar and events, offset for progress bar positioning
-  HEADER_HEIGHT: 50,
-  PROGRESS_BAR_OFFSET: 30,
-  PROGRESS_BAR_POSITION: 'bottom', // 'top', 'bottom', or 'login_screen' - where to place the progress bar
-  BOTTOM_PROGRESS_BAR_OFFSET: 80, // Offset from bottom when progress bar is at bottom
+  HEADER_HEIGHT: 80,           // Space for the top progress bar
+  PROGRESS_BAR_OFFSET: 40,     // Gap above months
+  PROGRESS_BAR_POSITION: 'top',
+  BOTTOM_PROGRESS_BAR_OFFSET: 80, 
 
   // Calendar grid - number of columns and rows, spacing between calendar blocks
   COLS: 4,     // 4 months per row
   ROWS: 3,     // 3 rows of months
-  GAP_X: 30,   // Horizontal gap between calendar blocks
+  GAP_X: 50,   // Increased horizontal gap
   GAP_Y: 40,   // Vertical gap between calendar blocks
   GRID_STEP_X_RATIO: 1/7.0,    // Horizontal spacing ratio for date grid within each month
-  GRID_STEP_Y_RATIO: 1/8.5,    // Vertical spacing ratio for date grid within each month
+  GRID_STEP_Y_RATIO: 1/8.0,    // Vertical spacing ratio for date grid within each month
 
   // Colors - various text and UI element colors
   TEXT_COLOR_DEFAULT: "#e5e5ea",      // Default text color for general text
   TEXT_COLOR_MONTH: "#f5f5f7",        // Color for month name headers
   TEXT_COLOR_WEEKEND: "#8e8e93",      // Color for weekend date numbers
   TEXT_COLOR_TODAY: "#ffffff",        // Color for today's date number
+  TEXT_COLOR_SPENT: "rgba(255,255,255,0.12)", // Color for past months/days
   TODAY_HIGHLIGHT_COLOR: "#ff3b30",   // Background circle color for today's date
   PROGRESS_BAR_COLOR: "#32d74b",      // Fill color for year progress bar
   PROGRESS_TRACK_COLOR: "rgba(255,255,255,0.15)", // Background track color for progress bar
@@ -62,7 +63,7 @@ const CONFIG = {
 
   // Grid offsets - ratios and sizes for calendar date grid positioning
   GRID_TOTAL_W_RATIO: 6,      // Total width ratio for the 7-day grid (6 intervals)
-  HIGHLIGHT_RADIUS: 18,       // Radius of the circle highlighting today's date
+  HIGHLIGHT_RADIUS: 16,       // Radius of the circle highlighting today's date
   TEXT_SIZE_EVENT: 20,        // Font size for calendar event text
   TEXT_SIZE_PROGRESS: 30,     // Font size for year progress text
 
@@ -125,13 +126,15 @@ const months = [
 // DRAW HELPERS
 // ======================================================
 
-function text(str,x,y,size=CONFIG.DEFAULT_TEXT_SIZE,color=CONFIG.TEXT_COLOR_DEFAULT, align="start", font=CONFIG.DEFAULT_FONT){
+function text(str,x,y,size=CONFIG.DEFAULT_TEXT_SIZE,color=CONFIG.TEXT_COLOR_DEFAULT, align="start", font=CONFIG.DEFAULT_FONT, baseline="alphabetic"){
   ctx.globalAlpha = 1;
   ctx.fillStyle = color;
   ctx.font = `bold ${size}px "${font}", sans-serif`;
   ctx.textAlign = align;
+  ctx.textBaseline = baseline;
   ctx.fillText(str,x,y);
   ctx.textAlign = "start"; // Reset
+  ctx.textBaseline = "alphabetic"; // Reset
 }
 
 // ======================================================
@@ -139,35 +142,30 @@ function text(str,x,y,size=CONFIG.DEFAULT_TEXT_SIZE,color=CONFIG.TEXT_COLOR_DEFA
 // ======================================================
 
 function setWallpaper(){
-  // Create images directory if it doesn't exist
   const imagesDir = `${__dirname}/images`;
   if (!fs.existsSync(imagesDir)){
     fs.mkdirSync(imagesDir);
   }
 
-  // Save desktop wallpaper (progress bar higher up)
-  CONFIG.PROGRESS_BAR_POSITION = 'login_screen';
+  // Common drawing setup
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,CONFIG.WIDTH,CONFIG.HEIGHT);
+  
   drawHeader();
+  drawCalendar();
+
+  // Save desktop wallpaper (static name)
   const desktopPath = `${imagesDir}/mac-wallpaper.png`;
   fs.writeFileSync(desktopPath, canvas.toBuffer("image/png"));
 
-  // Set desktop wallpaper
-  execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to "${desktopPath}"'`);
-  console.log("Desktop wallpaper set successfully ✅");
-
-  // Save lock screen wallpaper (progress bar at bottom)
-  // Reset canvas to remove previous progress bar
-  ctx.fillStyle = grad;
-  ctx.fillRect(0,0,CONFIG.WIDTH,CONFIG.HEIGHT);
-  drawCalendar(); // Redraw calendar without progress bar
-  CONFIG.PROGRESS_BAR_POSITION = 'bottom';
-  drawHeader(); // Draw progress bar in new position
-  const lockscreenPath = `${imagesDir}/mac-lockscreenwallpaper.png`;
-  fs.writeFileSync(lockscreenPath, canvas.toBuffer("image/png"));
-
-  // Set lock screen wallpaper
-  execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to "${lockscreenPath}"' && killall Dock`);
-  console.log("Lock screen wallpaper set successfully ✅");
+  // Set desktop wallpaper (Force refresh by setting to empty first)
+  if (!process.env.CI) {
+    execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to ""'`);
+    execSync(`osascript -e 'tell application "System Events" to set picture of every desktop to "${desktopPath}"'`);
+    console.log("Wallpaper set successfully ✅");
+  } else {
+    console.log("CI environment detected, skipping AppleScript wallpaper setting. ✅");
+  }
 }
 
 // ======================================================
@@ -175,88 +173,40 @@ function setWallpaper(){
 // ======================================================
 
 function drawHeader(){
-
   const startXGlobal = CONFIG.WIDTH * CONFIG.START_X_RATIO;
   const contentWidth = CONFIG.WIDTH * CONFIG.CONTENT_WIDTH_RATIO;
+  const startYGlobal = CONFIG.HEIGHT * CONFIG.START_Y_RATIO;
 
   const start = new Date(CY,0,1);
   const end = new Date(CY+1,0,1);
   const percent = (now-start)/(end-start);
 
+  // Match calendar width
   const barW = contentWidth;
   const barX = startXGlobal;
+  const barY = startYGlobal - 50;
+  const textY = barY - 20;
 
-  let barY, textY;
+  // Track (Subtle matching line)
+  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  ctx.fillRect(barX, barY, barW, 6);
 
-  // ======================================================
-  // POSITION LOGIC
-  // ======================================================
-
-  if(CONFIG.PROGRESS_BAR_POSITION === 'bottom'){
-
-    barY = CONFIG.HEIGHT - CONFIG.BOTTOM_PROGRESS_BAR_OFFSET;
-
-  }
-  else if(CONFIG.PROGRESS_BAR_POSITION === 'login_screen'){
-
-    // ⭐ Slightly up from bottom (for login screen)
-    // Adjust this value to move progress bar higher up
-    barY = CONFIG.HEIGHT - (CONFIG.BOTTOM_PROGRESS_BAR_OFFSET * 3);
-
-  }
-  else { // top
-
-    barY = CONFIG.HEIGHT * CONFIG.START_Y_RATIO + CONFIG.PROGRESS_BAR_OFFSET;
-
-  }
-
-  textY = barY - 18;
-
-
-  // ======================================================
-  // DRAW BAR
-  // ======================================================
-
-  // Track
-  ctx.fillStyle = CONFIG.PROGRESS_TRACK_COLOR;
-  ctx.fillRect(barX, barY, barW, 8);
-
-  // Fill
+  // Fill (Active progress)
   ctx.fillStyle = CONFIG.PROGRESS_BAR_COLOR;
-  ctx.fillRect(barX, barY, barW * percent, 8);
+  ctx.fillRect(barX, barY, barW * percent, 6);
 
-
-  // ======================================================
-  // TEXT
-  // ======================================================
-
+  // Text (Centered over the bar)
   const daysLeft = Math.floor((end-now)/(1000*60*60*24));
-
+  const weeksLeft = Math.ceil(daysLeft / 7);
+  
   text(
-    `${CY} Progress: ${Math.floor(percent*100)}%  •  ${daysLeft} days left`,
+    `${Math.floor(percent*100)}% . ${daysLeft} Days Left . ${weeksLeft} Weeks Left`,
     barX + (barW/2),
     textY,
-    CONFIG.TEXT_SIZE_PROGRESS,
+    18, 
     CONFIG.PROGRESS_TEXT_COLOR,
     "center"
   );
-
-
-  // ======================================================
-  // EVENTS (only for top)
-  // ======================================================
-
-  if(CONFIG.SHOW_EVENTS && CONFIG.PROGRESS_BAR_POSITION === 'top'){
-
-    const events = getEvents();
-
-    let evY = textY - 35;
-
-    events.forEach(e=>{
-      text(CONFIG.EVENT_BULLET + e, barX + barW, evY, CONFIG.TEXT_SIZE_EVENT, CONFIG.EVENT_TEXT_COLOR, "end");
-      evY -= 25;
-    });
-  }
 }
 
 
@@ -270,18 +220,12 @@ function drawCalendar(){
   const startXGlobal = CONFIG.WIDTH * CONFIG.START_X_RATIO;
   const contentWidth = CONFIG.WIDTH * CONFIG.CONTENT_WIDTH_RATIO;
 
-  // Vertical Constraints - adjust based on progress bar position
+  // Vertical Constraints
   const startYGlobal = CONFIG.HEIGHT * CONFIG.START_Y_RATIO;
   const maxContentHeight = CONFIG.HEIGHT * CONFIG.MAX_CONTENT_HEIGHT_RATIO;
 
-  let calendarStartY = startYGlobal;
-  let calendarHeight = maxContentHeight;
-
-  // Only push down when progress is at TOP
-  if(CONFIG.PROGRESS_BAR_POSITION === 'top'){
-    calendarStartY += CONFIG.HEADER_HEIGHT;
-    calendarHeight -= CONFIG.HEADER_HEIGHT;
-  }
+  let calendarStartY = startYGlobal + CONFIG.HEADER_HEIGHT;
+  let calendarHeight = maxContentHeight - CONFIG.HEADER_HEIGHT;
 
   const cols = CONFIG.COLS;
   const rows = CONFIG.ROWS;
@@ -305,22 +249,25 @@ function drawCalendar(){
   for(let r=0; r<rows; r++){
     for(let c=0; c<cols; c++){
 
-      const m = (CM + monthIndex) % 12;
-      const year = CY + Math.floor((CM+monthIndex)/12);
+      const m = monthIndex; // Always Jan-Dec
+      const year = CY;
 
       const startX = startXGlobal + (c * (blockW + gapX));
       const startY = calendarStartY + (r * (blockH + gapY));
 
+      const isSpentMonth = m < CM;
+
       // 1. Month Label
       const centerX = startX + (blockW/2);
-      text(months[m], centerX, startY + 30, MONTH_SIZE, CONFIG.TEXT_COLOR_MONTH, "center");
+      const monthColor = isSpentMonth ? CONFIG.TEXT_COLOR_SPENT : CONFIG.TEXT_COLOR_MONTH;
+      text(months[m], centerX, startY + 25, MONTH_SIZE, monthColor, "center");
 
       // 2. Dates
       const days = new Date(year,m+1,0).getDate();
       const first = new Date(year,m,1).getDay(); // Sun=0
       const offset = (first+6)%7; // Mon start
 
-      const gridStartY = startY + 80;
+      const gridStartY = startY + 65;
 
       for(let d=1; d<=days; d++){
         const idx = offset + (d-1);
@@ -335,18 +282,20 @@ function drawCalendar(){
 
         const dow = new Date(year,m,d).getDay();
         const isWeekend = (dow===0 || dow===6);
+        const isSpentDay = isSpentMonth || (m === CM && d < CD);
 
         // Highlight TODAY
         if(d===CD && m===CM && year===now.getFullYear()){
           ctx.beginPath();
-          ctx.arc(x, y - (DATE_SIZE/3), CONFIG.HIGHLIGHT_RADIUS, 0, Math.PI*2);
+          ctx.arc(x, y, CONFIG.HIGHLIGHT_RADIUS, 0, Math.PI*2);
           ctx.fillStyle = CONFIG.TODAY_HIGHLIGHT_COLOR;
           ctx.fill();
-          text(d.toString(), x, y, DATE_SIZE, CONFIG.TEXT_COLOR_TODAY, "center");
+          text(d.toString(), x, y, DATE_SIZE, CONFIG.TEXT_COLOR_TODAY, "center", CONFIG.DEFAULT_FONT, "middle");
         }
         else {
-          const color = isWeekend ? CONFIG.TEXT_COLOR_WEEKEND : CONFIG.TEXT_COLOR_MONTH;
-          text(d.toString(), x, y, DATE_SIZE, color, "center");
+          let color = isWeekend ? CONFIG.TEXT_COLOR_WEEKEND : CONFIG.TEXT_COLOR_MONTH;
+          if (isSpentDay) color = CONFIG.TEXT_COLOR_SPENT;
+          text(d.toString(), x, y, DATE_SIZE, color, "center", CONFIG.DEFAULT_FONT, "middle");
         }
       }
       monthIndex++;
@@ -361,10 +310,6 @@ function drawCalendar(){
 // MAIN
 // ======================================================
 
-// Draw calendar once (common to both wallpapers)
-drawCalendar();
-
-// Save wallpapers with different progress bar positions
 setWallpaper();
 
 console.log("Wallpaper generated ✅");

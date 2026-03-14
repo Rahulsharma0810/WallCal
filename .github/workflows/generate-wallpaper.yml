@@ -1,0 +1,35 @@
+name: Generate Wallpaper
+
+on:
+  schedule:
+    - cron: '30 23 * * *' # Run at 23:30 UTC every day
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  generate:
+    runs-on: macos-latest # Using macOS because node-canvas can be tricky to install on Linux without system deps
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate wallpaper
+        run: node mac-wallpaper.js
+        env:
+          # Prevent AppleScript errors in CI environment
+          CI: true
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update daily wallpaper [skip ci]"
+          file_pattern: 'images/*.png'
