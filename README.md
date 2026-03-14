@@ -11,6 +11,9 @@ A high-resolution, minimal set of dynamic calendar wallpapers for iPhone, iPad, 
 ## 🎨 Preview
 
 ![MacBook Wallpaper Preview](images/mac-wallpaper.png)
+![iPhone Wallpaper Preview](images/iphone-wallpaper.png)
+![iPad Portrait Wallpaper Preview](images/ipad-air-11-wallpaper.png)
+![iPad Landscape Wallpaper Preview](images/ipad-air-11-wallpaper-landscape.png)
 
 ---
 
@@ -47,6 +50,15 @@ npm run generate:all
 npm run verify
 ```
 
+Generate a single target when you only want one device:
+
+```bash
+npm run generate:iphone
+npm run generate:ipad
+npm run generate:ipad-landscape
+npm run generate:mac
+```
+
 ### 3. Device Matrix
 
 See [DEVICES.md](/workspaces/WallCal/DEVICES.md) for the current platform targets, resolutions, output files, and local commands.
@@ -69,6 +81,12 @@ const CONFIG = {
 Shared colors, fonts, and month labels live in `lib/wallpaper-theme.js`. Shared drawing and output logic live in `lib/wallpaper-renderer.js`.
 
 Platform generator entrypoints live under `generators/`, shared logic under `lib/`, validation and device configs under `configs/`, and local utility scripts under `scripts/` and `tests/`.
+
+Current platform configs:
+- `configs/iphone.js`
+- `configs/ipad-portrait.js`
+- `configs/ipad-landscape.js`
+- `configs/mac.js`
 
 ---
 
