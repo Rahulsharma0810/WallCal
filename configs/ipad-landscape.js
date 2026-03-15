@@ -12,19 +12,19 @@ module.exports = {
   highlightWeekends: true,
   gradientColors: BACKGROUND_GRADIENT,
   grid: {
-    topPaddingRatio: 0.22,
-    monthGapYRatio: 0.05,
+    topPaddingRatio: 0.257,
+    monthGapYRatio: 0.035,
     monthGapXRatio: 0.045,
     monthLabelSizeRatio: 0.019,
     monthLabelMinPx: 30,
-    monthLabelGapRatio: 1.32,
+    monthLabelGapRatio: 1.18,
     dotSpacingRatio: 0.0165,
     dotRadiusRatio: 0.0046
   },
   progress: {
     show: true,
     textSizeRatio: 0.022,
-    bottomInsetRatio: 0.12
+    bottomInsetRatio: 0.115
   },
   colors: SHARED_COLORS,
   fontFamily: FONT_FAMILY

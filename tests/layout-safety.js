@@ -12,18 +12,21 @@ const cases = [
   {
     name: "iphone",
     config: validateWallpaperConfig({ ...iphoneConfig, monthNames: MONTH_NAMES, fontFamily: FONT_FAMILY }),
+    minTopPadding: 0,
     minGapBetweenCalendarAndProgress: 80,
     minBottomSafeArea: 180
   },
   {
     name: "ipad portrait",
     config: validateWallpaperConfig({ ...ipadPortraitConfig, monthNames: MONTH_NAMES }),
+    minTopPadding: 0,
     minGapBetweenCalendarAndProgress: 100,
     minBottomSafeArea: 190
   },
   {
     name: "ipad landscape",
     config: validateWallpaperConfig({ ...ipadLandscapeConfig, monthNames: MONTH_NAMES }),
+    minTopPadding: 410,
     minGapBetweenCalendarAndProgress: 55,
     minBottomSafeArea: 130
   }
@@ -37,6 +40,12 @@ for (const testCase of cases) {
   const progressBottom = progress.textY + progress.textSize / 2;
   const gap = progressTop - calendar.calendarBottom;
   const bottomSafeArea = testCase.config.height - progressBottom;
+  const topPadding = calendar.topPadding;
+
+  assert.ok(
+    topPadding >= testCase.minTopPadding,
+    `${testCase.name}: calendar sits too high for top safe area (topPadding=${topPadding.toFixed(1)})`
+  );
 
   assert.ok(
     gap >= testCase.minGapBetweenCalendarAndProgress,
