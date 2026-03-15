@@ -34,7 +34,7 @@ const cases = [
   {
     name: "mac",
     config: validateWallpaperConfig({ ...macConfig, monthNames: MONTH_NAMES, fontFamily: FONT_FAMILY }),
-    minTopPadding: 530,
+    minTopPadding: 575,
     minGapBetweenCalendarAndProgress: 90,
     minBottomSafeArea: 360
   }

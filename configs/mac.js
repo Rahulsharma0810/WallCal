@@ -12,12 +12,12 @@ module.exports = {
   highlightWeekends: true,
   gradientColors: BACKGROUND_GRADIENT,
   grid: {
-    topPaddingRatio: 0.24,
-    monthGapYRatio: 0.03,
+    topPaddingRatio: 0.26,
+    monthGapYRatio: 0.02,
     monthGapXRatio: 0.05,
     monthLabelSizeRatio: 0.018,
     monthLabelMinPx: 42,
-    monthLabelGapRatio: 1.18,
+    monthLabelGapRatio: 1.12,
     dotSpacingRatio: 0.0138,
     dotRadiusRatio: 0.0035
   },
