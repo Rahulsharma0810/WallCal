@@ -26,7 +26,7 @@ const cases = [
   {
     name: "ipad landscape",
     config: validateWallpaperConfig({ ...ipadLandscapeConfig, monthNames: MONTH_NAMES }),
-    minTopPadding: 410,
+    minTopPadding: 470,
     minGapBetweenCalendarAndProgress: 55,
     minBottomSafeArea: 130
   }
