@@ -2,6 +2,7 @@ const assert = require("assert");
 const iphoneConfig = require("../configs/iphone");
 const ipadPortraitConfig = require("../configs/ipad-portrait");
 const ipadLandscapeConfig = require("../configs/ipad-landscape");
+const macConfig = require("../configs/mac");
 const { MONTH_NAMES, FONT_FAMILY } = require("../lib/wallpaper-theme");
 const { validateWallpaperConfig } = require("../lib/wallpaper-config");
 const { createDateState, getDotCalendarLayout, getProgressLayout } = require("../lib/wallpaper-renderer");
@@ -29,6 +30,13 @@ const cases = [
     minTopPadding: 470,
     minGapBetweenCalendarAndProgress: 55,
     minBottomSafeArea: 130
+  },
+  {
+    name: "mac",
+    config: validateWallpaperConfig({ ...macConfig, monthNames: MONTH_NAMES, fontFamily: FONT_FAMILY }),
+    minTopPadding: 530,
+    minGapBetweenCalendarAndProgress: 90,
+    minBottomSafeArea: 360
   }
 ];
 
@@ -58,4 +66,4 @@ for (const testCase of cases) {
   );
 }
 
-console.log("Layout safety checks passed for iPhone and iPad wallpapers.");
+console.log("Layout safety checks passed for iPhone, iPad, and Mac wallpapers.");
